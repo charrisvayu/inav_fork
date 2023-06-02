@@ -101,6 +101,7 @@ set rate_accel_limit_roll_pitch = 0
 set rate_accel_limit_yaw = 10000
 set heading_hold_rate_limit = 90
 set nav_mc_pos_z_p = 50
+set nav_mc_pos_z_i = 50
 set nav_mc_vel_z_p = 100
 set nav_mc_vel_z_i = 50
 set nav_mc_vel_z_d = 10

@@ -197,8 +197,8 @@ PG_RESET_TEMPLATE(pidProfile_t, pidProfile,
                 },
                 [PID_POS_Z] = {
                     .P = SETTING_NAV_MC_POS_Z_P_DEFAULT,      // NAV_POS_Z_P * 100
-                    .I = 0,                                   // not used
-                    .D = 0,                                   // not used
+                    .I = SETTING_NAV_MC_POS_Z_I_DEFAULT,      // not used
+                    .D = SETTING_NAV_MC_POS_Z_D_DEFAULT,      // not used
                     .FF = 0,
                 },
                 [PID_VEL_Z] = {
@@ -1123,7 +1123,7 @@ void FAST_CODE pidController(float dT)
 
             float angleTarget = getFlightAxisAngleOverride(axis, computePidLevelTarget(axis));
             angleTarget /= speed_multiplier;
-            
+
             //Apply the Level PID controller
             pidLevel(angleTarget, &pidState[axis], axis, horizonRateMagnitude, dT);
             canUseFpvCameraMix = false;     // FPVANGLEMIX is incompatible with ANGLE/HORIZON

@@ -1878,24 +1878,36 @@ groups:
         min: 0
         max: 255
         default_value: 50
+      - name: nav_mc_pos_z_i
+        description: "I gain of altitude PID controller (Multirotor)"
+        field: bank_mc.pid[PID_POS_Z].I
+        min: 0
+        max: 255
+        default_value: 5
+      - name: nav_mc_pos_z_d
+        description: "D gain of altitude PID controller (Multirotor)"
+        field: bank_mc.pid[PID_POS_Z].D
+        min: 0
+        max: 255
+        default_value: 10
       - name: nav_mc_vel_z_p
         description: "P gain of velocity PID controller"
         field: bank_mc.pid[PID_VEL_Z].P
         min: 0
         max: 255
-        default_value: 100
+        default_value: 150
       - name: nav_mc_vel_z_i
         description: "I gain of velocity PID controller"
         field: bank_mc.pid[PID_VEL_Z].I
         min: 0
         max: 255
-        default_value: 50
+        default_value: 75
       - name: nav_mc_vel_z_d
         description: "D gain of velocity PID controller"
         field: bank_mc.pid[PID_VEL_Z].D
         min: 0
         max: 255
-        default_value: 10
+        default_value: 20
       - name: nav_mc_pos_xy_p
         description: "Controls how fast the drone will fly towards the target position. This is a multiplier to convert displacement to target velocity"
         field: bank_mc.pid[PID_POS_XY].P
@@ -3180,7 +3192,6 @@ groups:
         field: ahi_max_pitch
         min: 10
         max: 90
-        default_value: 20
       - name: osd_crosshairs_style
         description: "To set the visual type for the crosshair"
         default_value: "DEFAULT"
@@ -3711,14 +3722,14 @@ groups:
       - name: pinio_box1
         field: permanentId[0]
         description: "Mode assignment for PINIO#1"
-        default_value: "target specific"
+        # default_value: "target specific"
         min: 0
         max: 255
         default_value: :BOX_PERMANENT_ID_NONE
         type: uint8_t
       - name: pinio_box2
         field: permanentId[1]
-        default_value: "target specific"
+        # default_value: "target specific"
         description: "Mode assignment for PINIO#1"
         min: 0
         max: 255
@@ -3726,7 +3737,7 @@ groups:
         type: uint8_t
       - name: pinio_box3
         field: permanentId[2]
-        default_value: "target specific"
+        # default_value: "target specific"
         description: "Mode assignment for PINIO#1"
         min: 0
         max: 255
@@ -3734,7 +3745,7 @@ groups:
         type: uint8_t
       - name: pinio_box4
         field: permanentId[3]
-        default_value: "target specific"
+        # default_value: "target specific"
         description: "Mode assignment for PINIO#1"
         min: 0
         max: 255
@@ -3768,7 +3779,6 @@ groups:
           description: "Enable when BLHeli32 Auto Telemetry function is used. Disable in every other case"
           field: listenOnly
           type: bool
-          default_value: OFF
 
   - name: PG_SMARTPORT_MASTER_CONFIG
     type: smartportMasterConfig_t
