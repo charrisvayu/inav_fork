@@ -20,6 +20,9 @@ Following rangefinders are supported:
 * UIB - experimental
 * MSP - experimental
 * TOF10120 - small & lightweight laser range sensor, usable up to 200cm
+* GARMIN_V3HP - Garmin LIDaR sensor added by Vayu -- I2C
+* LIGHTWARE_LW20C - Lightware LIDaR sensor added by Vayu -- I2C
+
 
 ## Connections
 

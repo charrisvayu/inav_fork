@@ -50,6 +50,7 @@
 #include "io/gps.h"
 
 #include "navigation/navigation.h"
+#include "navigation/navigation_private.h"
 
 #include "rx/rx.h"
 
@@ -1114,8 +1115,15 @@ void FAST_CODE pidController(float dT)
     for (uint8_t axis = FD_ROLL; axis <= FD_PITCH; axis++) {
         if (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE) || isFlightAxisAngleOverrideActive(axis)) {
             //If axis angle override, get the correct angle from Logic Conditions
-            float angleTarget = getFlightAxisAngleOverride(axis, computePidLevelTarget(axis));
+            float speed_multiplier = 1;
 
+            if (posControl.flags.isCollisionDetected) {
+                speed_multiplier = 3;
+            }
+
+            float angleTarget = getFlightAxisAngleOverride(axis, computePidLevelTarget(axis));
+            angleTarget /= speed_multiplier;
+            
             //Apply the Level PID controller
             pidLevel(angleTarget, &pidState[axis], axis, horizonRateMagnitude, dT);
             canUseFpvCameraMix = false;     // FPVANGLEMIX is incompatible with ANGLE/HORIZON

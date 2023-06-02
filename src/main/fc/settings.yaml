@@ -7,7 +7,7 @@ tables:
     values: ["NONE", "AUTO", "MPU6000", "MPU6500", "MPU9250", "BMI160", "ICM20689", "BMI088", "ICM42605", "BMI270","LSM6DXX",  "FAKE"]
     enum: accelerationSensor_e
   - name: rangefinder_hardware
-    values: ["NONE", "SRF10", "VL53L0X", "MSP", "BENEWAKE", "VL53L1X", "US42", "TOF10120_I2C", "FAKE"]
+    values: ["NONE", "SRF10", "VL53L0X", "MSP", "BENEWAKE", "VL53L1X", "US42", "TOF10120_I2C", "FAKE", "V3HP_I2C", "LW20C_I2C"]
     enum: rangefinderType_e
   - name: mag_hardware
     values: ["NONE", "AUTO", "HMC5883", "AK8975", "MAG3110", "AK8963", "IST8310", "QMC5883", "MPU9250", "IST8308", "LIS3MDL", "MSP", "RM3100", "VCM5883", "MLX90393", "FAKE"]
@@ -448,7 +448,7 @@ groups:
         default_value: "NONE"
       - name: rangefinder_median_filter
         description: "3-point median filtering for rangefinder readouts"
-        default_value: OFF
+        default_value: ON
         field: use_median_filtering
         type: bool
 
@@ -2182,7 +2182,7 @@ groups:
         table: reset_type
       - name: inav_max_surface_altitude
         description: "Max allowed altitude for surface following mode. [cm]"
-        default_value: 200
+        default_value: 1000
         field: max_surface_altitude
         min: 0
         max: 1000
@@ -2289,7 +2289,7 @@ groups:
         max: 15
       - name: nav_use_midthr_for_althold
         description: "If set to OFF, the FC remembers your throttle stick position when enabling ALTHOLD and treats it as a neutral midpoint for holding altitude"
-        default_value: OFF
+        default_value: ON
         field: general.flags.use_thr_mid_for_althold
         type: bool
       - name: nav_extra_arming_safety
@@ -2490,10 +2490,10 @@ groups:
         min: 0
       - name: nav_max_terrain_follow_alt
         field: general.max_terrain_follow_altitude
-        default_value: "100"
+        default_value: 1000
         description: "Max allowed above the ground altitude for terrain following mode"
         max: 1000
-        default_value: 100
+        # default_value: 1000
       - name: nav_max_altitude
         field: general.max_altitude
         description: "Max allowed altitude (above Home Point) that applies to all NAV modes (including Altitude Hold). 0 means limit is disabled"

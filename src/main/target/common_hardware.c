@@ -350,6 +350,26 @@
     #endif
 #endif
 
+#if defined(USE_RANGEFINDER_V3HP_I2C) && (defined(V3HP_I2C_BUS) || defined(RANGEFINDER_I2C_BUS))
+    #if !defined(V3HP_I2C_BUS)
+        #define V3HP_I2C_BUS RANGEFINDER_I2C_BUS
+    #endif
+    #if defined(V3HP_I2C_BUS)
+    // TODO: MAKE A DEFINITION FOR THIS I2C ADDRESS
+    BUSDEV_REGISTER_I2C(busdev_v3hp,      DEVHW_V3HP_I2C,   V3HP_I2C_BUS,     0x62,               NONE,           DEVFLAGS_USE_RAW_REGISTERS,  0);
+    #endif
+#endif
+
+#if defined(USE_RANGEFINDER_LW20C_I2C) && (defined(LW20C_I2C_BUS) || defined(RANGEFINDER_I2C_BUS))
+    #if !defined(LW20C_I2C_BUS)
+        #define LW20C_I2C_BUS RANGEFINDER_I2C_BUS
+    #endif
+    #if defined(LW20C_I2C_BUS)
+    // TODO: NEED TO MAKE THIS I2C ADDRESS CONFIGURABLE!
+    BUSDEV_REGISTER_I2C(busdev_lw20c,      DEVHW_LW20C_I2C,   LW20C_I2C_BUS,     0x6C,               NONE,           DEVFLAGS_USE_RAW_REGISTERS,  0);
+    #endif
+#endif
+
 /** AIRSPEED SENSORS **/
 
 #if defined(PITOT_I2C_BUS) && !defined(MS4525_I2C_BUS)

@@ -42,6 +42,10 @@
 #include "drivers/rangefinder/rangefinder_virtual.h"
 #include "drivers/rangefinder/rangefinder_us42.h"
 #include "drivers/rangefinder/rangefinder_tof10120_i2c.h"
+#include "drivers/rangefinder/rangefinder_v3hp_i2c.h"
+#include "drivers/rangefinder/rangefinder_lw20c_i2c.h"
+
+#include "navigation/navigation_private.h"
 
 #include "fc/config.h"
 #include "fc/runtime_config.h"
@@ -141,6 +145,7 @@ static bool rangefinderDetect(rangefinderDev_t * dev, uint8_t rangefinderHardwar
             }
 #endif
             break;
+            
             case RANGEFINDER_FAKE:
 #if defined(USE_RANGEFINDER_FAKE)
             if(virtualRangefinderDetect(dev, &rangefinderFakeVtable)) {
@@ -149,6 +154,25 @@ static bool rangefinderDetect(rangefinderDev_t * dev, uint8_t rangefinderHardwar
             }
 #endif
             break;
+
+            case RANGEFINDER_V3HPI2C:
+#ifdef USE_RANGEFINDER_V3HP_I2C
+            if (v3hpDetect(dev)) {
+                rangefinderHardware = RANGEFINDER_V3HPI2C;
+                rescheduleTask(TASK_RANGEFINDER, TASK_PERIOD_MS(RANGEFINDER_V3HP_I2C_TASK_PERIOD_MS));
+            }
+#endif
+            break;
+
+            case RANGEFINDER_LW20CI2C:
+#ifdef USE_RANGEFINDER_LW20C_I2C
+            if (lw20cDetect(dev)) {
+                rangefinderHardware = RANGEFINDER_LW20CI2C;
+                rescheduleTask(TASK_RANGEFINDER, TASK_PERIOD_MS(RANGEFINDER_LW20C_I2C_TASK_PERIOD_MS));
+            }
+#endif
+            break;
+
             case RANGEFINDER_NONE:
             rangefinderHardware = RANGEFINDER_NONE;
             break;
@@ -181,7 +205,7 @@ bool rangefinderInit(void)
 
 static int32_t applyMedianFilter(int32_t newReading)
 {
-    #define DISTANCE_SAMPLES_MEDIAN 5
+    #define DISTANCE_SAMPLES_MEDIAN 3
     static int32_t filterSamples[DISTANCE_SAMPLES_MEDIAN];
     static int filterSampleIndex = 0;
     static bool medianFilterReady = false;
@@ -194,7 +218,7 @@ static int32_t applyMedianFilter(int32_t newReading)
             medianFilterReady = true;
         }
     }
-    return medianFilterReady ? quickMedianFilter5(filterSamples) : newReading;
+    return medianFilterReady ? quickMedianFilter3(filterSamples) : newReading;
 }
 
 /*
@@ -216,6 +240,12 @@ bool rangefinderProcess(float cosTiltAngle)
 {
     if (rangefinder.dev.read) {
         const int32_t distance = rangefinder.dev.read(&rangefinder.dev);
+
+        if (distance < 200.0 && distance >= 0.0) {
+            posControl.flags.isCollisionDetected = true;
+        } else {
+            posControl.flags.isCollisionDetected = false;
+        }
 
         // If driver reported no new measurement - don't do anything
         if (distance == RANGEFINDER_NO_NEW_DATA) {

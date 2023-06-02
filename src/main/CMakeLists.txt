@@ -235,6 +235,10 @@ main_sources(COMMON_SRC
     drivers/rangefinder/rangefinder_us42.h
     drivers/rangefinder/rangefinder_tof10120_i2c.c
     drivers/rangefinder/rangefinder_tof10120_i2c.h
+    drivers/rangefinder/rangefinder_v3hp_i2c.c
+    drivers/rangefinder/rangefinder_v3hp_i2c.h
+    drivers/rangefinder/rangefinder_lw20c_i2c.c
+    drivers/rangefinder/rangefinder_lw20c_i2c.h
 
     drivers/resource.c
     drivers/resource.h

@@ -99,6 +99,7 @@ typedef struct navigationFlags_s {
     bool isGCSAssistedNavigationEnabled;    // Does INAV accept WP#255 - follow-me etc.
     bool isGCSAssistedNavigationReset;      // GCS control was disabled - indicate that so code could take action accordingly
     bool isTerrainFollowEnabled;            // Does INAV use rangefinder for terrain following (adjusting baro altitude target according to rangefinders readings)
+    bool isCollisionDetected;               // For now, just going to use this as a flag to determine whether or not we should be reducing the max speed
 
     // Failsafe actions
     bool forcedRTHActivated;
