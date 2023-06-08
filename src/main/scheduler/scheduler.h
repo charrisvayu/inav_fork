@@ -76,6 +76,9 @@ typedef enum {
 #ifdef USE_RANGEFINDER
     TASK_RANGEFINDER,
 #endif
+#ifdef USE_COLLISION
+    TASK_COLLISION,
+#endif
 #ifdef USE_DASHBOARD
     TASK_DASHBOARD,
 #endif

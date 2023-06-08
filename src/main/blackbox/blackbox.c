@@ -1641,7 +1641,7 @@ static void loadMainState(timeUs_t currentTimeUs)
 
 #ifdef USE_RANGEFINDER
     // Store the raw rangefinder surface readout without applying tilt correction
-    blackboxCurrent->surfaceRaw = rangefinderGetLatestRawAltitude();
+    blackboxCurrent->surfaceRaw = rangefinderGetLatestRawAltitude(&rangefinder);
 #endif
 
     blackboxCurrent->rssi = getRSSI();

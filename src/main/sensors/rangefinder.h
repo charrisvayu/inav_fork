@@ -51,12 +51,19 @@ typedef struct rangefinder_s {
 } rangefinder_t;
 
 extern rangefinder_t rangefinder;
+extern rangefinder_t rangefinder_1;
+// extern rangefinder_t rangefinder_right;
+// extern rangefinder_t rangefinder_rear;
+// extern rangefinder_t rangefinder_left;
 
-bool rangefinderInit(void);
+// changes made to include an individual rangefinders for F/R/Rr/L -- this also fed the change to make each 
+// function pass WHICH rangefinder its accessing by reference instead of using the general global rangefinder
 
-int32_t rangefinderGetLatestAltitude(void);
-int32_t rangefinderGetLatestRawAltitude(void);
+bool rangefinderInit(rangefinder_t* rf, int8_t rangefinder_position);
 
-timeDelta_t rangefinderUpdate(void);
-bool rangefinderProcess(float cosTiltAngle);
-bool rangefinderIsHealthy(void);
+int32_t rangefinderGetLatestAltitude(rangefinder_t* rf);
+int32_t rangefinderGetLatestRawAltitude(rangefinder_t* rf);
+
+timeDelta_t rangefinderUpdate(rangefinder_t* rf);
+bool rangefinderProcess(rangefinder_t* rf, float cosTiltAngle);
+bool rangefinderIsHealthy(rangefinder_t* rf);

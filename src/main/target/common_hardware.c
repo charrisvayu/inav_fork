@@ -366,7 +366,15 @@
     #endif
     #if defined(LW20C_I2C_BUS)
     // TODO: NEED TO MAKE THIS I2C ADDRESS CONFIGURABLE!
-    BUSDEV_REGISTER_I2C(busdev_lw20c,      DEVHW_LW20C_I2C,   LW20C_I2C_BUS,     0x6C,               NONE,           DEVFLAGS_USE_RAW_REGISTERS,  0);
+    BUSDEV_REGISTER_I2C(busdev_lw20c,      DEVHW_LW20C_I2C,   LW20C_I2C_BUS,     0x6A,               NONE,           DEVFLAGS_USE_RAW_REGISTERS,  0);
+
+    // #if defined USE_COLLISION
+    //     BUSDEV_REGISTER_I2C(busdev_lw20c_1,      DEVHW_LW20C_I2C_1,   LW20C_I2C_BUS,     0x6C,               NONE,           DEVFLAGS_USE_RAW_REGISTERS,  0);
+    // #endif
+    // BUSDEV_REGISTER_I2C(busdev_lw20c_right,      DEVHW_LW20C_I2C,   LW20C_I2C_BUS,     0x6C,               NONE,           DEVFLAGS_USE_RAW_REGISTERS,  0);
+    // BUSDEV_REGISTER_I2C(busdev_lw20c_rear,      DEVHW_LW20C_I2C,   LW20C_I2C_BUS,     0x6C,               NONE,           DEVFLAGS_USE_RAW_REGISTERS,  0);
+    // BUSDEV_REGISTER_I2C(busdev_lw20c_left,      DEVHW_LW20C_I2C,   LW20C_I2C_BUS,     0x6C,               NONE,           DEVFLAGS_USE_RAW_REGISTERS,  0);
+
     #endif
 #endif
 

@@ -121,7 +121,7 @@ hardwareSensorStatus_e getHwRangefinderStatus(void)
 {
 #if defined(USE_RANGEFINDER)
     if (detectedSensors[SENSOR_INDEX_RANGEFINDER] != RANGEFINDER_NONE) {
-        if (rangefinderIsHealthy()) {
+        if (rangefinderIsHealthy(&rangefinder)) {
             return HW_SENSOR_OK;
         }
         else {

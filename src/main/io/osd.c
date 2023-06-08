@@ -2035,7 +2035,7 @@ static bool osdDrawSingleElement(uint8_t item)
 #ifdef USE_RANGEFINDER
     case OSD_RANGEFINDER:
         {
-            int32_t range = rangefinderGetLatestRawAltitude();
+            int32_t range = rangefinderGetLatestRawAltitude(&rangefinder);
             if (range < 0) {
                 buff[0] = '-';
                 buff[1] = '-';
@@ -2185,6 +2185,8 @@ static bool osdDrawSingleElement(uint8_t item)
                 p = "ANGL";
             else if (FLIGHT_MODE(HORIZON_MODE))
                 p = "HOR ";
+            else if (FLIGHT_MODE(COLLISION_MODE))
+                p = "COL ";
 
             displayWrite(osdDisplayPort, elemPosX, elemPosY, p);
             return true;

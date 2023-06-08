@@ -71,7 +71,15 @@ bool sensorsAutodetect(void)
 #endif
 
 #ifdef USE_RANGEFINDER
-    rangefinderInit();
+    rangefinderInit(&rangefinder, 0);
+    // rangefinderInit(&rangefinder_1, 1);
+#endif
+
+#ifdef USE_COLLISION
+    rangefinderInit(&rangefinder_1, 1);
+    // rangefinderInit(&rangefinder_right);
+    // rangefinderInit(&rangefinder_rear);
+    // rangefinderInit(&rangefinder_left);
 #endif
 
 #ifdef USE_OPFLOW

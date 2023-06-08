@@ -216,7 +216,7 @@ void taskUpdateRangefinder(timeUs_t currentTimeUs)
         return;
 
     // Update and adjust task to update at required rate
-    const uint32_t newDeadline = rangefinderUpdate();
+    const uint32_t newDeadline = rangefinderUpdate(&rangefinder);
     if (newDeadline != 0) {
         rescheduleTask(TASK_SELF, newDeadline);
     }
@@ -224,11 +224,34 @@ void taskUpdateRangefinder(timeUs_t currentTimeUs)
     /*
      * Process raw rangefinder readout
      */
-    if (rangefinderProcess(calculateCosTiltAngle())) {
-        updatePositionEstimator_SurfaceTopic(currentTimeUs, rangefinderGetLatestAltitude());
+    if (rangefinderProcess(&rangefinder, calculateCosTiltAngle())) {
+        updatePositionEstimator_SurfaceTopic(currentTimeUs, rangefinderGetLatestAltitude(&rangefinder));
     }
 }
 #endif
+
+// #ifdef USE_COLLISION
+// void taskUpdateCollision(timeUs_t currentTimeUs)
+// {
+//     UNUSED(currentTimeUs);
+
+//     if (!sensors(SENSOR_RANGEFINDER))
+//         return;
+
+//     // Update and adjust task to update at required rate
+//     const uint32_t newDeadline = rangefinderUpdate();
+//     if (newDeadline != 0) {
+//         rescheduleTask(TASK_SELF, newDeadline);
+//     }
+
+//     /*
+//      * Process raw rangefinder readout
+//      */
+//     if (rangefinderProcess(calculateCosTiltAngle())) {
+//         updatePositionEstimator_SurfaceTopic(currentTimeUs, rangefinderGetLatestAltitude());
+//     }
+// }
+// #endif
 
 #if defined(USE_IRLOCK)
 void taskUpdateIrlock(timeUs_t currentTimeUs)
@@ -357,6 +380,9 @@ void fcTasksInit(void)
 #endif
 #ifdef USE_RANGEFINDER
     setTaskEnabled(TASK_RANGEFINDER, sensors(SENSOR_RANGEFINDER));
+#endif
+#ifdef USE_COLLISION
+    setTaskEnabled(TASK_COLLISION, sensors(SENSOR_RANGEFINDER));
 #endif
 #ifdef USE_DASHBOARD
     setTaskEnabled(TASK_DASHBOARD, feature(FEATURE_DASHBOARD));
@@ -512,6 +538,15 @@ cfTask_t cfTasks[TASK_COUNT] = {
         .staticPriority = TASK_PRIORITY_MEDIUM,
     },
 #endif
+
+// #ifdef USE_COLLISION // ADDED BY CAM
+//     [TASK_COLLISION] = {
+//         .taskName = "COLLISION",
+//         .taskFunc = taskUpdateCollision,
+//         .desiredPeriod = TASK_PERIOD_MS(70),
+//         .staticPriority = TASK_PRIORITY_MEDIUM,
+//     },
+// #endif
 
 #ifdef USE_IRLOCK
     [TASK_IRLOCK] = {

@@ -60,6 +60,7 @@
 #include "sensors/acceleration.h"
 #include "sensors/compass.h"
 #include "sensors/pitotmeter.h"
+#include "sensors/rangefinder.h"
 
 #include "scheduler/scheduler.h"
 
@@ -585,6 +586,30 @@ int16_t angleFreefloatDeadband(int16_t deadband, flight_dynamics_index_t axis)
 static float computePidLevelTarget(flight_dynamics_index_t axis) {
     // This is ROLL/PITCH, run ANGLE/HORIZON controllers
     float angleTarget = pidRcCommandToAngle(rcCommand[axis], pidProfile()->max_angle_inclination[axis]);
+
+    if(IS_RC_MODE_ACTIVE(BOXCOLLISION)) { // ADDED BY CAM -- should this be somewhere else? right now, not sure how to keep track of axis/direction
+
+        // int32_t front_dist = rangefinderGetLatestAltitude(&rangefinder_1);
+        // int32_t right_dist = rangefinder_right.calculatedAltitude;
+        // int32_t rear_dist = rangefinder_rear.calculatedAltitude;
+        // int32_t left_dist = rangefinder_left.calculatedAltitude;
+        
+        // int32_t min_dist = MIN(MIN(front_dist, right_dist), MIN(rear_dist, left_dist));
+        // int32_t min_dist = MIN(left_dist, right_dist);
+
+
+        float speed_multiplier = 3;
+
+        // if (front_dist < 100 && front_dist >= 2) {
+        //     speed_multiplier = 3;
+        // }
+
+        // if (posControl.flags.isCollisionDetected) {
+            
+        // }
+
+        angleTarget /= speed_multiplier;
+    }
 
     // Automatically pitch down if the throttle is manually controlled and reduced bellow cruise throttle
     if ((axis == FD_PITCH) && STATE(AIRPLANE) && FLIGHT_MODE(ANGLE_MODE) && !navigationIsControllingThrottle()) {
@@ -1115,14 +1140,8 @@ void FAST_CODE pidController(float dT)
     for (uint8_t axis = FD_ROLL; axis <= FD_PITCH; axis++) {
         if (FLIGHT_MODE(ANGLE_MODE) || FLIGHT_MODE(HORIZON_MODE) || isFlightAxisAngleOverrideActive(axis)) {
             //If axis angle override, get the correct angle from Logic Conditions
-            float speed_multiplier = 1;
-
-            if (posControl.flags.isCollisionDetected) {
-                speed_multiplier = 3;
-            }
 
             float angleTarget = getFlightAxisAngleOverride(axis, computePidLevelTarget(axis));
-            angleTarget /= speed_multiplier;
 
             //Apply the Level PID controller
             pidLevel(angleTarget, &pidState[axis], axis, horizonRateMagnitude, dT);

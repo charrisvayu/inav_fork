@@ -782,7 +782,7 @@ static int logicConditionGetFlightOperandValue(int operand) {
             break;    
         
         case LOGIC_CONDITION_OPERAND_FLIGHT_RANGEFINDER_RAW:
-            return rangefinderGetLatestRawAltitude();
+            return rangefinderGetLatestRawAltitude(&rangefinder);
             break; 
 
         default:

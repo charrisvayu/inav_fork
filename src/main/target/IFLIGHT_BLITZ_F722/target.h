@@ -70,6 +70,7 @@
 
 #define USE_RANGEFINDER
 #define RANGEFINDER_I2C_BUS     BUS_I2C1
+// #define USE_COLLISION
 
 // *************** SPI2 OSD***********************
 #define USE_SPI_DEVICE_2

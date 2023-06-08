@@ -87,9 +87,20 @@ static bool deviceDetect(rangefinderDev_t *rangefinder)
     return busReadBuf(rangefinder->busDev, LW20C_MEASUREMENT_REGISTER, buffer, sizeof(buffer));
 }
 
-bool lw20cDetect(rangefinderDev_t *rangefinder)
+bool lw20cDetect(rangefinderDev_t *rangefinder, int8_t rangefinder_position)
 {
-    rangefinder->busDev = busDeviceInit(BUSTYPE_I2C, DEVHW_LW20C_I2C, 0, OWNER_RANGEFINDER);
+    // switch (rangefinder_position) {
+    //     case 0:
+    //         rangefinder->busDev = busDeviceInit(BUSTYPE_I2C, DEVHW_LW20C_I2C, 0, OWNER_RANGEFINDER); // TODO: allow configurable DEVHW parameter
+    //         break;
+    //     case 1:
+    //         rangefinder->busDev = busDeviceInit(BUSTYPE_I2C, DEVHW_LW20C_I2C_1, 0, OWNER_RANGEFINDER); // TODO: allow configurable DEVHW parameter
+    //         break;
+    // }
+
+    rangefinder->busDev = busDeviceInit(BUSTYPE_I2C, DEVHW_LW20C_I2C, 0, OWNER_RANGEFINDER); // TODO: allow configurable DEVHW parameter
+
+
     if (rangefinder->busDev == NULL) {
         return false;
     }

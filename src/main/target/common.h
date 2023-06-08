@@ -74,6 +74,9 @@
 #define USE_RATE_DYNAMICS
 #define USE_EXTENDED_CMS_MENUS
 
+// Allow collision detection via rangefinders
+// #define USE_COLLISION
+
 // Allow default rangefinders
 #define USE_RANGEFINDER
 #define USE_RANGEFINDER_MSP
