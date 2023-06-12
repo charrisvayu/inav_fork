@@ -81,7 +81,7 @@ static bool collisionDetect(collisionDev_t * dev, uint8_t collisionHardwareToUse
 
     switch (collisionHardwareToUse) {
             case COLLISION_LW20CI2C:
-#ifdef USE_COLLISION_LW20C_I2C
+#if defined(USE_COLLISION_LW20C_I2C)
             if (collisionLw20cDetect(dev)) {
                 collisionHardware = COLLISION_LW20CI2C;
                 rescheduleTask(TASK_COLLISION, TASK_PERIOD_MS(COLLISION_LW20C_I2C_TASK_PERIOD_MS));
