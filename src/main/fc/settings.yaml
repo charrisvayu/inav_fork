@@ -9,6 +9,9 @@ tables:
   - name: rangefinder_hardware
     values: ["NONE", "SRF10", "VL53L0X", "MSP", "BENEWAKE", "VL53L1X", "US42", "TOF10120_I2C", "FAKE", "V3HP_I2C", "LW20C_I2C"]
     enum: rangefinderType_e
+  - name: collision_hardware
+    values: ["NONE", "LW20C_I2C"]
+    enum: collisionType_e
   - name: mag_hardware
     values: ["NONE", "AUTO", "HMC5883", "AK8975", "MAG3110", "AK8963", "IST8310", "QMC5883", "MPU9250", "IST8308", "LIS3MDL", "MSP", "RM3100", "VCM5883", "MLX90393", "FAKE"]
     enum: magSensor_e
@@ -452,6 +455,21 @@ groups:
         field: use_median_filtering
         type: bool
 
+  - name: PG_COLLISION_CONFIG
+    type: collisionConfig_t
+    headers: ["sensors/collision.h"]
+    condition: USE_COLLISION
+    members:
+      - name: collision_hardware
+        table: collision_hardware
+        description: "Selection of collision hardware."
+        default_value: LW20C_I2C
+      - name: collision_median_filter
+        description: "median filtering for collision detection"
+        default_value: OFF
+        field: use_median_filtering_for_collision
+        type: bool
+        
   - name: PG_OPFLOW_CONFIG
     type: opticalFlowConfig_t
     headers: ["sensors/opflow.h"]

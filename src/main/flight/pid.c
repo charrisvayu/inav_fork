@@ -60,6 +60,7 @@
 #include "sensors/acceleration.h"
 #include "sensors/compass.h"
 #include "sensors/pitotmeter.h"
+#include "sensors/collision.h"
 
 #include "scheduler/scheduler.h"
 
@@ -1117,9 +1118,15 @@ void FAST_CODE pidController(float dT)
             //If axis angle override, get the correct angle from Logic Conditions
             float speed_multiplier = 1;
 
-            if (posControl.flags.isCollisionDetected) {
-                speed_multiplier = 3;
-            }
+            // if (posControl.flags.isCollisionDetected) {
+            //     speed_multiplier = 3;
+            // }
+
+            // if (FLIGHT_MODE(COLLISION_MODE)) {
+            //     if (collisionGetLatestDistance(&collision_1) < 100) {
+            //         speed_multiplier = 3;
+            //     }
+            // }
 
             float angleTarget = getFlightAxisAngleOverride(axis, computePidLevelTarget(axis));
             angleTarget /= speed_multiplier;

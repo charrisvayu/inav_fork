@@ -98,6 +98,7 @@ static const box_t boxes[CHECKBOX_ITEM_COUNT + 1] = {
     { .boxId = BOXSOARING,          .boxName = "SOARING",           .permanentId = 56 },
     { .boxId = BOXCHANGEMISSION,    .boxName = "MISSION CHANGE",    .permanentId = 59 },
     { .boxId = BOXBEEPERMUTE,       .boxName = "BEEPER MUTE",       .permanentId = 60 },
+    { .boxId = BOXCOLLISION,        .boxName = "COLLISION PREVENT", .permanentId = 61 },
     { .boxId = CHECKBOX_ITEM_COUNT, .boxName = NULL,                .permanentId = 0xFF }
 };
 
@@ -191,6 +192,7 @@ void initActiveBoxIds(void)
     }
 
     ADD_ACTIVE_BOX(BOXHEADINGHOLD);
+    ADD_ACTIVE_BOX(BOXCOLLISION);
 
     //Camstab mode is enabled always
     ADD_ACTIVE_BOX(BOXCAMSTAB);
@@ -377,6 +379,7 @@ void packBoxModeFlags(boxBitmask_t * mspBoxModeFlags)
     CHECK_ACTIVE_BOX(IS_ENABLED(FLIGHT_MODE(FAILSAFE_MODE)),            BOXFAILSAFE);
     CHECK_ACTIVE_BOX(IS_ENABLED(FLIGHT_MODE(NAV_ALTHOLD_MODE)),         BOXNAVALTHOLD);
     CHECK_ACTIVE_BOX(IS_ENABLED(FLIGHT_MODE(NAV_POSHOLD_MODE)),         BOXNAVPOSHOLD);
+    CHECK_ACTIVE_BOX(IS_ENABLED(FLIGHT_MODE(COLLISION_MODE)),           BOXCOLLISION);
     CHECK_ACTIVE_BOX(IS_ENABLED(FLIGHT_MODE(NAV_COURSE_HOLD_MODE)),     BOXNAVCOURSEHOLD);
     CHECK_ACTIVE_BOX(IS_ENABLED(FLIGHT_MODE(NAV_COURSE_HOLD_MODE)) && IS_ENABLED(FLIGHT_MODE(NAV_ALTHOLD_MODE)), BOXNAVCRUISE);
     CHECK_ACTIVE_BOX(IS_ENABLED(FLIGHT_MODE(NAV_RTH_MODE)),             BOXNAVRTH);
@@ -432,7 +435,7 @@ uint16_t packSensorStatus(void)
             IS_ENABLED(sensors(SENSOR_RANGEFINDER)) << 4 |
             IS_ENABLED(sensors(SENSOR_OPFLOW))      << 5 |
             IS_ENABLED(sensors(SENSOR_PITOT))       << 6 |
-            IS_ENABLED(sensors(SENSOR_TEMP))        << 7;
+            IS_ENABLED(sensors(SENSOR_TEMP))        << 7; // TODO: NEEDED?
 
     // Hardware failure indication bit
     if (!isHardwareHealthy()) {

@@ -120,6 +120,8 @@
 
 #define USE_RANGEFINDER
 #define RANGEFINDER_I2C_BUS     BUS_I2C1
+#define USE_COLLISION
+// #define COLLISION_I2C_BUS       BUS_I2C1
 
 // *************** UART *****************************
 #define USE_VCP

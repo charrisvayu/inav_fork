@@ -48,6 +48,8 @@
 #include "drivers/compass/compass_fake.h"
 #include "drivers/rangefinder/rangefinder_virtual.h"
 #include "io/rangefinder.h"
+#include "sensors/collision.h"
+#include "drivers/collision/collision.h"
 #include "common/utils.h"
 #include "common/maths.h"
 #include "flight/mixer.h"

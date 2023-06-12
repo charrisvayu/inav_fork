@@ -22,6 +22,7 @@
 #include "sensors/acceleration.h"
 #include "sensors/barometer.h"
 #include "sensors/rangefinder.h"
+#include "sensors/collision.h"
 #include "sensors/pitotmeter.h"
 #include "sensors/opflow.h"
 
@@ -121,7 +122,7 @@ hardwareSensorStatus_e getHwRangefinderStatus(void)
 {
 #if defined(USE_RANGEFINDER)
     if (detectedSensors[SENSOR_INDEX_RANGEFINDER] != RANGEFINDER_NONE) {
-        if (rangefinderIsHealthy()) {
+        if (rangefinderIsHealthy(&rangefinder)) {
             return HW_SENSOR_OK;
         }
         else {

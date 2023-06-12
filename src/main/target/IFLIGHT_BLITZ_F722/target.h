@@ -47,6 +47,7 @@
 #define USE_I2C_DEVICE_1
 #define I2C1_SCL                PB8
 #define I2C1_SDA                PB9
+// #define USE_I2C_DEVICE_4
 
 #define USE_BARO
 #define BARO_I2C_BUS            BUS_I2C1
@@ -70,6 +71,8 @@
 
 #define USE_RANGEFINDER
 #define RANGEFINDER_I2C_BUS     BUS_I2C1
+#define USE_COLLISION
+// #define COLLISION_I2C_BUS       BUS_I2C1
 
 // *************** SPI2 OSD***********************
 #define USE_SPI_DEVICE_2

@@ -240,6 +240,9 @@ main_sources(COMMON_SRC
     drivers/rangefinder/rangefinder_lw20c_i2c.c
     drivers/rangefinder/rangefinder_lw20c_i2c.h
 
+    drivers/collision/collision_lw20c_i2c.c
+    drivers/collision/collision_lw20c_i2c.h
+
     drivers/resource.c
     drivers/resource.h
     drivers/rcc.c
@@ -557,6 +560,8 @@ main_sources(COMMON_SRC
     sensors/pitotmeter.h
     sensors/rangefinder.c
     sensors/rangefinder.h
+    sensors/collision.c
+    sensors/collision.h
     sensors/opflow.c
     sensors/opflow.h
     sensors/battery_sensor_fake.c

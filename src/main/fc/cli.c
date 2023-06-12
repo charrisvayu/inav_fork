@@ -113,6 +113,7 @@ bool cliMode = false;
 #include "sensors/gyro.h"
 #include "sensors/pitotmeter.h"
 #include "sensors/rangefinder.h"
+#include "sensors/collision.h"
 #include "sensors/opflow.h"
 #include "sensors/sensors.h"
 #include "sensors/temperature.h"
@@ -180,10 +181,10 @@ static const char * const gyroNames[] = { "NONE", "AUTO", "MPU6000", "MPU6500", 
 
 // sync this with sensors_e
 static const char * const sensorTypeNames[] = {
-    "GYRO", "ACC", "BARO", "MAG", "RANGEFINDER", "PITOT", "OPFLOW", "GPS", "GPS+MAG", NULL
+    "GYRO", "ACC", "BARO", "MAG", "RANGEFINDER", "PITOT", "OPFLOW", "COLLISION", "GPS", "GPS+MAG", NULL
 };
 
-#define SENSOR_NAMES_MASK (SENSOR_GYRO | SENSOR_ACC | SENSOR_BARO | SENSOR_MAG | SENSOR_RANGEFINDER | SENSOR_PITOT | SENSOR_OPFLOW)
+#define SENSOR_NAMES_MASK (SENSOR_GYRO | SENSOR_ACC | SENSOR_BARO | SENSOR_MAG | SENSOR_RANGEFINDER | SENSOR_PITOT | SENSOR_OPFLOW | SENSOR_COLLISION)
 
 static const char * const hardwareSensorStatusNames[] = {
     "NONE", "OK", "UNAVAILABLE", "FAILING"
@@ -204,6 +205,11 @@ static const char * const *sensorHardwareNames[] = {
 #endif
 #ifdef USE_RANGEFINDER
         table_rangefinder_hardware,
+#else
+        NULL,
+#endif
+#ifdef USE_COLLISION
+        table_collision_hardware,
 #else
         NULL,
 #endif

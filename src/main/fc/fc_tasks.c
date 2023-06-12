@@ -85,6 +85,7 @@
 #include "sensors/pitotmeter.h"
 #include "sensors/rangefinder.h"
 #include "sensors/opflow.h"
+#include "sensors/collision.h"
 
 #include "telemetry/telemetry.h"
 
@@ -216,7 +217,7 @@ void taskUpdateRangefinder(timeUs_t currentTimeUs)
         return;
 
     // Update and adjust task to update at required rate
-    const uint32_t newDeadline = rangefinderUpdate();
+    const uint32_t newDeadline = rangefinderUpdate(&rangefinder);
     if (newDeadline != 0) {
         rescheduleTask(TASK_SELF, newDeadline);
     }
@@ -224,8 +225,31 @@ void taskUpdateRangefinder(timeUs_t currentTimeUs)
     /*
      * Process raw rangefinder readout
      */
-    if (rangefinderProcess(calculateCosTiltAngle())) {
-        updatePositionEstimator_SurfaceTopic(currentTimeUs, rangefinderGetLatestAltitude());
+    if (rangefinderProcess(calculateCosTiltAngle(), &rangefinder)) {
+        updatePositionEstimator_SurfaceTopic(currentTimeUs, rangefinderGetLatestAltitude(&rangefinder));
+    }
+}
+#endif
+
+#ifdef USE_COLLISION
+void taskUpdateCollision(timeUs_t currentTimeUs)
+{
+    UNUSED(currentTimeUs);
+
+    if (!sensors(SENSOR_COLLISION))
+        return;
+
+    // Update and adjust task to update at required rate
+    const uint32_t newDeadline = collisionUpdate(&collision_1);
+    if (newDeadline != 0) {
+        rescheduleTask(TASK_SELF, newDeadline);
+    }
+
+    /*
+     * Process raw rangefinder readout
+     */
+    if (collisionProcess(&collision_1)) {
+        // updatePositionEstimator_SurfaceTopic(currentTimeUs, rangefinderGetLatestAltitude(&rangefinder));
     }
 }
 #endif
@@ -357,6 +381,9 @@ void fcTasksInit(void)
 #endif
 #ifdef USE_RANGEFINDER
     setTaskEnabled(TASK_RANGEFINDER, sensors(SENSOR_RANGEFINDER));
+#endif
+#ifdef USE_COLLISION
+    setTaskEnabled(TASK_COLLISION, sensors(SENSOR_COLLISION)); // TODO: finish implementation
 #endif
 #ifdef USE_DASHBOARD
     setTaskEnabled(TASK_DASHBOARD, feature(FEATURE_DASHBOARD));
@@ -508,6 +535,15 @@ cfTask_t cfTasks[TASK_COUNT] = {
     [TASK_RANGEFINDER] = {
         .taskName = "RANGEFINDER",
         .taskFunc = taskUpdateRangefinder,
+        .desiredPeriod = TASK_PERIOD_MS(70),
+        .staticPriority = TASK_PRIORITY_MEDIUM,
+    },
+#endif
+
+#ifdef USE_COLLISION
+    [TASK_COLLISION] = {
+        .taskName = "COLLISION",
+        .taskFunc = taskUpdateCollision,
         .desiredPeriod = TASK_PERIOD_MS(70),
         .staticPriority = TASK_PRIORITY_MEDIUM,
     },

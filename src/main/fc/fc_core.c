@@ -47,6 +47,7 @@
 #include "sensors/gyro.h"
 #include "sensors/battery.h"
 #include "sensors/rangefinder.h"
+#include "sensors/collision.h"
 #include "sensors/opflow.h"
 #include "sensors/esc_sensor.h"
 
@@ -271,6 +272,7 @@ static void updateArmingStatus(void)
                 isModeActivationConditionPresent(BOXANGLE) ||
                 isModeActivationConditionPresent(BOXHORIZON) ||
                 isModeActivationConditionPresent(BOXNAVALTHOLD) ||
+                isModeActivationConditionPresent(BOXCOLLISION) ||
                 isModeActivationConditionPresent(BOXHEADINGHOLD) ||
                 isModeActivationConditionPresent(BOXNAVLAUNCH) ||
                 isModeActivationConditionPresent(BOXTURNASSIST) ||

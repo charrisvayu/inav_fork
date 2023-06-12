@@ -36,13 +36,14 @@
 #include "sensors/opflow.h"
 #include "sensors/pitotmeter.h"
 #include "sensors/rangefinder.h"
+#include "sensors/collision.h"
 #include "sensors/sensors.h"
 #include "sensors/temperature.h"
 #include "sensors/temperature.h"
 #include "rx/rx.h"
 
-uint8_t requestedSensors[SENSOR_INDEX_COUNT] = { GYRO_AUTODETECT, ACC_NONE, BARO_NONE, MAG_NONE, RANGEFINDER_NONE, PITOT_NONE, OPFLOW_NONE };
-uint8_t detectedSensors[SENSOR_INDEX_COUNT] = { GYRO_NONE, ACC_NONE, BARO_NONE, MAG_NONE, RANGEFINDER_NONE, PITOT_NONE, OPFLOW_NONE };
+uint8_t requestedSensors[SENSOR_INDEX_COUNT] = { GYRO_AUTODETECT, ACC_NONE, BARO_NONE, MAG_NONE, RANGEFINDER_NONE, PITOT_NONE, OPFLOW_NONE, COLLISION_LW20CI2C };
+uint8_t detectedSensors[SENSOR_INDEX_COUNT] = { GYRO_NONE, ACC_NONE, BARO_NONE, MAG_NONE, RANGEFINDER_NONE, PITOT_NONE, OPFLOW_NONE, COLLISION_NONE };
 
 bool sensorsAutodetect(void)
 {
@@ -71,7 +72,11 @@ bool sensorsAutodetect(void)
 #endif
 
 #ifdef USE_RANGEFINDER
-    rangefinderInit();
+    rangefinderInit(&rangefinder, 0); // 0 for not using sensor for collision detection
+#endif
+
+#ifdef USE_COLLISION
+    collisionInit(&collision_1);
 #endif
 
 #ifdef USE_OPFLOW

@@ -79,6 +79,7 @@
 #include "sensors/gyro.h"
 #include "sensors/pitotmeter.h"
 #include "sensors/rangefinder.h"
+#include "sensors/collision.h"
 #include "sensors/sensors.h"
 #include "sensors/esc_sensor.h"
 #include "flight/wind_estimator.h"
@@ -283,6 +284,9 @@ static const blackboxDeltaFieldDefinition_t blackboxMainFields[] = {
 #ifdef USE_RANGEFINDER
     {"surfaceRaw",   -1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(TAG8_8SVB), FLIGHT_LOG_FIELD_CONDITION_SURFACE},
 #endif
+// #ifdef USE_COLLISION
+//     {"collisionRaw",   -1, SIGNED,   .Ipredict = PREDICT(0),       .Iencode = ENCODING(SIGNED_VB),   .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(TAG8_8SVB), FLIGHT_LOG_FIELD_CONDITION_COLLISION},
+// #endif
     {"rssi",       -1, UNSIGNED, .Ipredict = PREDICT(0),       .Iencode = ENCODING(UNSIGNED_VB), .Ppredict = PREDICT(PREVIOUS),      .Pencode = ENCODING(TAG8_8SVB), FLIGHT_LOG_FIELD_CONDITION_RSSI},
 
     /* Gyros and accelerometers base their P-predictions on the average of the previous 2 frames to reduce noise impact */
@@ -506,6 +510,9 @@ typedef struct blackboxMainState_s {
 #ifdef USE_RANGEFINDER
     int32_t surfaceRaw;
 #endif
+// #ifdef USE_COLLISION
+//     int32_t collisionRaw;
+// #endif
     uint16_t rssi;
     int16_t navState;
     uint16_t navFlags;
@@ -679,6 +686,12 @@ static bool testBlackboxConditionUncached(FlightLogFieldCondition condition)
 #else
         return false;
 #endif
+//     case FLIGHT_LOG_FIELD_CONDITION_COLLISION:
+// #ifdef USE_COLLISION
+//         return sensors(SENSOR_COLLISION);
+// #else
+//         return false;
+// #endif
 
     case FLIGHT_LOG_FIELD_CONDITION_FIXED_WING_NAV:
 
@@ -885,6 +898,12 @@ static void writeIntraframe(void)
         blackboxWriteSignedVB(blackboxCurrent->surfaceRaw);
     }
 #endif
+
+// #ifdef USE_COLLISION
+//     if (testBlackboxCondition(FLIGHT_LOG_FIELD_CONDITION_COLLISION)) {
+//         blackboxWriteSignedVB(blackboxCurrent->collisionRaw);
+//     }
+// #endif
 
     if (testBlackboxCondition(FLIGHT_LOG_FIELD_CONDITION_RSSI)) {
         blackboxWriteUnsignedVB(blackboxCurrent->rssi);
@@ -1152,6 +1171,12 @@ static void writeInterframe(void)
         deltas[optionalFieldCount++] = blackboxCurrent->surfaceRaw - blackboxLast->surfaceRaw;
     }
 #endif
+
+// #ifdef USE_COLLISION
+//     if (testBlackboxCondition(FLIGHT_LOG_FIELD_CONDITION_COLLISION)) {
+//         deltas[optionalFieldCount++] = blackboxCurrent->collisionRaw - blackboxLast->collisionRaw;
+//     }
+// #endif
 
     if (testBlackboxCondition(FLIGHT_LOG_FIELD_CONDITION_RSSI)) {
         deltas[optionalFieldCount++] = (int32_t) blackboxCurrent->rssi - blackboxLast->rssi;
@@ -1641,8 +1666,12 @@ static void loadMainState(timeUs_t currentTimeUs)
 
 #ifdef USE_RANGEFINDER
     // Store the raw rangefinder surface readout without applying tilt correction
-    blackboxCurrent->surfaceRaw = rangefinderGetLatestRawAltitude();
+    blackboxCurrent->surfaceRaw = rangefinderGetLatestRawAltitude(&rangefinder);
 #endif
+
+// #ifdef USE_COLLISION
+//     blackboxCurrent->collisionRaw = collisionGetLatestRawDistance(&collision_1);
+// #endif
 
     blackboxCurrent->rssi = getRSSI();
 

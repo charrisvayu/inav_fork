@@ -50,6 +50,7 @@
 #include "sensors/battery.h"
 #include "sensors/boardalignment.h"
 #include "sensors/rangefinder.h"
+#include "sensors/collision.h"
 
 #include "io/beeper.h"
 #include "io/serial.h"

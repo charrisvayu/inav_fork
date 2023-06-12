@@ -48,15 +48,16 @@ typedef struct rangefinder_s {
     int32_t rawAltitude;
     int32_t calculatedAltitude;
     timeMs_t lastValidResponseTimeMs;
+    bool useForCollisionDetection;
 } rangefinder_t;
 
 extern rangefinder_t rangefinder;
 
-bool rangefinderInit(void);
+bool rangefinderInit(rangefinder_t* rf, bool useForCollisionDetection);
 
-int32_t rangefinderGetLatestAltitude(void);
-int32_t rangefinderGetLatestRawAltitude(void);
+int32_t rangefinderGetLatestAltitude(rangefinder_t* rf);
+int32_t rangefinderGetLatestRawAltitude(rangefinder_t* rf);
 
-timeDelta_t rangefinderUpdate(void);
-bool rangefinderProcess(float cosTiltAngle);
-bool rangefinderIsHealthy(void);
+timeDelta_t rangefinderUpdate(rangefinder_t* rf);
+bool rangefinderProcess(float cosTiltAngle, rangefinder_t* rf);
+bool rangefinderIsHealthy(rangefinder_t* rf);

@@ -137,6 +137,7 @@ typedef enum {
     DEVHW_TOF10120_I2C,
     DEVHW_V3HP_I2C,
     DEVHW_LW20C_I2C,
+    DEVHW_LW20C_I2C_COLLISION,
 
 
     /* Other hardware */

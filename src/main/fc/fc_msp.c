@@ -112,6 +112,7 @@
 #include "sensors/diagnostics.h"
 #include "sensors/battery.h"
 #include "sensors/rangefinder.h"
+#include "sensors/collision.h"
 #include "sensors/acceleration.h"
 #include "sensors/barometer.h"
 #include "sensors/pitotmeter.h"
@@ -603,7 +604,7 @@ static bool mspFcProcessOutCommand(uint16_t cmdMSP, sbuf_t *dst, mspPostProcessF
 
     case MSP_SONAR_ALTITUDE:
 #ifdef USE_RANGEFINDER
-        sbufWriteU32(dst, rangefinderGetLatestAltitude());
+        sbufWriteU32(dst, rangefinderGetLatestAltitude(&rangefinder));
 #else
         sbufWriteU32(dst, 0);
 #endif

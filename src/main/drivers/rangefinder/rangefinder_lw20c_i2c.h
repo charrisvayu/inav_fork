@@ -19,4 +19,4 @@
 
 #define RANGEFINDER_LW20C_I2C_TASK_PERIOD_MS 100
 
-bool lw20cDetect(rangefinderDev_t *rangefinder);
+bool lw20cDetect(rangefinderDev_t *rangefinderDev, bool useForCollisionDetection);

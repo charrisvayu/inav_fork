@@ -86,6 +86,9 @@
 #define USE_RANGEFINDER_V3HP_I2C
 #define USE_RANGEFINDER_LW20C_I2C
 
+// #define USE_COLLISION
+// #define USE_COLLISION_LW20C_I2C
+
 // Allow default optic flow boards
 #define USE_OPFLOW
 #define USE_OPFLOW_CXOF

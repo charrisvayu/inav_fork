@@ -365,8 +365,18 @@
         #define LW20C_I2C_BUS RANGEFINDER_I2C_BUS
     #endif
     #if defined(LW20C_I2C_BUS)
-    // TODO: NEED TO MAKE THIS I2C ADDRESS CONFIGURABLE!
-    BUSDEV_REGISTER_I2C(busdev_lw20c,      DEVHW_LW20C_I2C,   LW20C_I2C_BUS,     0x6C,               NONE,           DEVFLAGS_USE_RAW_REGISTERS,  0);
+        // TODO: NEED TO MAKE THIS I2C ADDRESS CONFIGURABLE!
+        BUSDEV_REGISTER_I2C(busdev_lw20c,      DEVHW_LW20C_I2C,   LW20C_I2C_BUS,     0x6C,               NONE,           DEVFLAGS_USE_RAW_REGISTERS,  0);    
+    #endif
+#endif
+
+#if defined(USE_COLLISION_LW20C_I2C)
+    #if !defined(COLLISION_LW20C_I2C_BUS)
+        #define COLLISION_LW20C_I2C_BUS COLLISION_I2C_BUS
+    #endif
+    #if defined(COLLISION_LW20C_I2C_BUS)
+        BUSDEV_REGISTER_I2C(busdev_lw20c_collision,      DEVHW_LW20C_I2C_COLLISION,   LW20C_I2C_BUS,     0x66,               NONE,           DEVFLAGS_USE_RAW_REGISTERS,  0);    
+        // TODO
     #endif
 #endif
 

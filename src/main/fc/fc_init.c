@@ -138,6 +138,7 @@
 #include "sensors/initialisation.h"
 #include "sensors/pitotmeter.h"
 #include "sensors/rangefinder.h"
+#include "sensors/collision.h"
 #include "sensors/sensors.h"
 #include "sensors/esc_sensor.h"
 

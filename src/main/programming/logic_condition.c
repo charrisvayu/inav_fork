@@ -44,6 +44,7 @@
 #include "sensors/battery.h"
 #include "sensors/pitotmeter.h"
 #include "sensors/rangefinder.h"
+#include "sensors/collision.h"
 #include "flight/imu.h"
 #include "flight/pid.h"
 #include "drivers/io_port_expander.h"
@@ -782,7 +783,7 @@ static int logicConditionGetFlightOperandValue(int operand) {
             break;    
         
         case LOGIC_CONDITION_OPERAND_FLIGHT_RANGEFINDER_RAW:
-            return rangefinderGetLatestRawAltitude();
+            return rangefinderGetLatestRawAltitude(&rangefinder);
             break; 
 
         default:

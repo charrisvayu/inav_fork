@@ -59,11 +59,13 @@
 
 #include "scheduler/scheduler.h"
 
+#define USE_RANGEFINDER
+
 rangefinder_t rangefinder;
 
 #define RANGEFINDER_HARDWARE_TIMEOUT_MS         500     // Accept 500ms of non-responsive sensor, report HW failure otherwise
 
-#define RANGEFINDER_DYNAMIC_THRESHOLD           600     //Used to determine max. usable rangefinder disatance
+#define RANGEFINDER_DYNAMIC_THRESHOLD           600     //Used to determine max. usable rangefinder distance
 #define RANGEFINDER_DYNAMIC_FACTOR              75
 
 #ifdef USE_RANGEFINDER
@@ -77,7 +79,7 @@ PG_RESET_TEMPLATE(rangefinderConfig_t, rangefinderConfig,
 /*
  * Detect which rangefinder is present
  */
-static bool rangefinderDetect(rangefinderDev_t * dev, uint8_t rangefinderHardwareToUse)
+static bool rangefinderDetect(rangefinderDev_t * dev, uint8_t rangefinderHardwareToUse, bool useForCollisionDetection)
 {
     rangefinderType_e rangefinderHardware = RANGEFINDER_NONE;
     requestedSensors[SENSOR_INDEX_RANGEFINDER] = rangefinderHardwareToUse;
@@ -166,9 +168,13 @@ static bool rangefinderDetect(rangefinderDev_t * dev, uint8_t rangefinderHardwar
 
             case RANGEFINDER_LW20CI2C:
 #ifdef USE_RANGEFINDER_LW20C_I2C
-            if (lw20cDetect(dev)) {
-                rangefinderHardware = RANGEFINDER_LW20CI2C;
-                rescheduleTask(TASK_RANGEFINDER, TASK_PERIOD_MS(RANGEFINDER_LW20C_I2C_TASK_PERIOD_MS));
+            if (!useForCollisionDetection) {
+                if (lw20cDetect(dev, useForCollisionDetection)) {
+                    rangefinderHardware = RANGEFINDER_LW20CI2C;
+                    rescheduleTask(TASK_RANGEFINDER, TASK_PERIOD_MS(RANGEFINDER_LW20C_I2C_TASK_PERIOD_MS));
+                }
+            } else {
+                bool nothin = lw20cDetect(dev, useForCollisionDetection);
             }
 #endif
             break;
@@ -188,17 +194,24 @@ static bool rangefinderDetect(rangefinderDev_t * dev, uint8_t rangefinderHardwar
     return true;
 }
 
-bool rangefinderInit(void)
+bool rangefinderInit(rangefinder_t* rf, bool useForCollisionDetection)
 {
-    if (!rangefinderDetect(&rangefinder.dev, rangefinderConfig()->rangefinder_hardware)) {
-        return false;
+    if (!useForCollisionDetection) {
+        if (!rangefinderDetect(&rf->dev, rangefinderConfig()->rangefinder_hardware, useForCollisionDetection)) {
+            return false;
+        }
+    } else {
+        if (!rangefinderDetect(&rf->dev, rangefinderConfig()->rangefinder_hardware, useForCollisionDetection)) {
+            return false;
+        }
     }
 
-    rangefinder.dev.init(&rangefinder.dev);
-    rangefinder.rawAltitude = RANGEFINDER_OUT_OF_RANGE;
-    rangefinder.calculatedAltitude = RANGEFINDER_OUT_OF_RANGE;
-    rangefinder.maxTiltCos = cos_approx(DECIDEGREES_TO_RADIANS(rangefinder.dev.detectionConeExtendedDeciDegrees / 2.0f));
-    rangefinder.lastValidResponseTimeMs = millis();
+    rf->dev.init(&rf->dev);
+    rf->rawAltitude = RANGEFINDER_OUT_OF_RANGE;
+    rf->calculatedAltitude = RANGEFINDER_OUT_OF_RANGE;
+    rf->maxTiltCos = cos_approx(DECIDEGREES_TO_RADIANS(rf->dev.detectionConeExtendedDeciDegrees / 2.0f));
+    rf->lastValidResponseTimeMs = millis();
+    rf->useForCollisionDetection = useForCollisionDetection;
 
     return true;
 }
@@ -224,22 +237,22 @@ static int32_t applyMedianFilter(int32_t newReading)
 /*
  * This is called periodically by the scheduler
  */
-timeDelta_t rangefinderUpdate(void)
+timeDelta_t rangefinderUpdate(rangefinder_t* rf)
 {
-    if (rangefinder.dev.update) {
-        rangefinder.dev.update(&rangefinder.dev);
+    if (rf->dev.update) {
+        rf->dev.update(&rf->dev);
     }
 
-    return MS2US(rangefinder.dev.delayMs);
+    return MS2US(rf->dev.delayMs);
 }
 
 /**
  * Get the last distance measured by the sonar in centimeters. When the ground is too far away, RANGEFINDER_OUT_OF_RANGE is returned.
  */
-bool rangefinderProcess(float cosTiltAngle)
+bool rangefinderProcess(float cosTiltAngle, rangefinder_t* rf)
 {
-    if (rangefinder.dev.read) {
-        const int32_t distance = rangefinder.dev.read(&rangefinder.dev);
+    if (rf->dev.read) {
+        const int32_t distance = rf->dev.read(&rf->dev);
 
         if (distance < 200.0 && distance >= 0.0) {
             posControl.flags.isCollisionDetected = true;
@@ -253,25 +266,25 @@ bool rangefinderProcess(float cosTiltAngle)
         }
 
         if (distance >= 0) {
-            rangefinder.lastValidResponseTimeMs = millis();
-            rangefinder.rawAltitude = distance;
+            rf->lastValidResponseTimeMs = millis();
+            rf->rawAltitude = distance;
 
             if (rangefinderConfig()->use_median_filtering) {
-                rangefinder.rawAltitude = applyMedianFilter(rangefinder.rawAltitude);
+                rf->rawAltitude = applyMedianFilter(rf->rawAltitude);
             }
         }
         else if (distance == RANGEFINDER_OUT_OF_RANGE) {
-            rangefinder.lastValidResponseTimeMs = millis();
-            rangefinder.rawAltitude = RANGEFINDER_OUT_OF_RANGE;
+            rf->lastValidResponseTimeMs = millis();
+            rf->rawAltitude = RANGEFINDER_OUT_OF_RANGE;
         }
         else {
             // Invalid response / hardware failure
-            rangefinder.rawAltitude = RANGEFINDER_HARDWARE_FAILURE;
+            rf->rawAltitude = RANGEFINDER_HARDWARE_FAILURE;
         }
     }
     else {
         // Bad configuration
-        rangefinder.rawAltitude = RANGEFINDER_OUT_OF_RANGE;
+        rf->rawAltitude = RANGEFINDER_OUT_OF_RANGE;
     }
 
     /**
@@ -280,10 +293,10 @@ bool rangefinderProcess(float cosTiltAngle)
     *
     * When the ground is too far away or the tilt is too large, RANGEFINDER_OUT_OF_RANGE is returned.
     */
-    if (cosTiltAngle < rangefinder.maxTiltCos || rangefinder.rawAltitude < 0) {
-        rangefinder.calculatedAltitude = RANGEFINDER_OUT_OF_RANGE;
+    if (cosTiltAngle < rf->maxTiltCos || rf->rawAltitude < 0) {
+        rf->calculatedAltitude = RANGEFINDER_OUT_OF_RANGE;
     } else {
-        rangefinder.calculatedAltitude = rangefinder.rawAltitude * cosTiltAngle;
+        rf->calculatedAltitude = rf->rawAltitude * cosTiltAngle;
     }
 
     return true;
@@ -293,17 +306,17 @@ bool rangefinderProcess(float cosTiltAngle)
  * Get the latest altitude that was computed, or RANGEFINDER_OUT_OF_RANGE if sonarCalculateAltitude
  * has never been called.
  */
-int32_t rangefinderGetLatestAltitude(void)
+int32_t rangefinderGetLatestAltitude(rangefinder_t* rf)
 {
-    return rangefinder.calculatedAltitude;
+    return rf->calculatedAltitude;
 }
 
-int32_t rangefinderGetLatestRawAltitude(void) {
-    return rangefinder.rawAltitude;
+int32_t rangefinderGetLatestRawAltitude(rangefinder_t* rf) {
+    return rf->rawAltitude;
 }
 
-bool rangefinderIsHealthy(void)
+bool rangefinderIsHealthy(rangefinder_t* rf)
 {
-    return (millis() - rangefinder.lastValidResponseTimeMs) < RANGEFINDER_HARDWARE_TIMEOUT_MS;
+    return (millis() - rf->lastValidResponseTimeMs) < RANGEFINDER_HARDWARE_TIMEOUT_MS;
 }
 #endif
