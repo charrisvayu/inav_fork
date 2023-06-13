@@ -21,7 +21,7 @@
 
 #include "platform.h"
 
-// #if defined(USE_RANGEFINDER) && defined(USE_RANGEFINDER_LW20C_I2C)
+#if defined(USE_RANGEFINDER) && defined(USE_RANGEFINDER_LW20C_I2C)
 
 #include "drivers/time.h"
 #include "drivers/rangefinder/rangefinder.h"
@@ -113,4 +113,4 @@ bool lw20cDetect(rangefinderDev_t *rangefinderDev, bool useForCollisionDetection
 
     return true;
 }
-// #endif
+#endif
